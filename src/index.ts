@@ -21,8 +21,9 @@ export const Config: Schema<Config> = Schema.object({
 })
 
 export function apply(ctx: Context, config: Config) {
-  ctx.command('galaku <operation:string> [value:text]', 'ESP32-S3 GALAKU bridge control')
+  ctx.command('galaku <operation:string> [value:text]', 'ESP32-S3 GALAKU 控制桥')
     .alias('galaku-esp32s3')
+    .alias('gk')
     .action(async (_, operation = 'status', value = '') => {
       if (operation.trim().toLowerCase() === 'help') {
         return usage()
@@ -30,8 +31,8 @@ export function apply(ctx: Context, config: Config) {
 
       if (operation.trim().toLowerCase() === 'bridge') {
         return [
-          `GALAKU bridge: ${config.host}:${config.port}`,
-          'Start tools/galaku-serial-bridge.ps1 on the machine that owns the ESP32-S3 COM port.',
+          `GALAKU 桥接地址：${config.host}:${config.port}`,
+          '请在持有 ESP32-S3 COM 口的 Windows 机器上启动 tools/galaku-serial-bridge.ps1。',
         ].join('\n')
       }
 
@@ -44,18 +45,18 @@ export function apply(ctx: Context, config: Config) {
           lines.push(command.note)
         }
 
-        lines.push(result.reply ? `GALAKU => ${result.reply}` : 'Command sent; no serial reply was returned by the bridge.')
+        lines.push(result.reply ? `GALAKU => ${result.reply}` : '命令已发送，但桥脚本没有返回串口回复。')
         return lines.join('\n')
       } catch (error) {
-        return `GALAKU command failed: ${error instanceof Error ? error.message : String(error)}`
+        return `GALAKU 命令失败：${error instanceof Error ? error.message : String(error)}`
       }
     })
 }
 
 function usage(): string {
   return [
-    'Usage: galaku <status|ping|scan|services|set|hit|stop|bridge>',
-    'Examples:',
+    '用法：galaku <status|ping|scan|services|set|hit|stop|bridge>',
+    '示例：',
     'galaku status',
     'galaku set 30',
     'galaku hit 1.5',

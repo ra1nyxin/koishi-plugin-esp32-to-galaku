@@ -53,9 +53,9 @@ export function buildSerialCommand(operation = 'status', value = '', allowRaw = 
 
     case 'raw':
       if (!allowRaw) {
-        throw new Error('raw command is disabled by plugin config')
+        throw new Error('raw 命令已被插件配置禁用')
       }
-      return { line: normalizeBridgeLine(arg), note: 'raw command sent' }
+      return { line: normalizeBridgeLine(arg), note: '已发送 raw 命令' }
 
     default:
       throw new Error(`unknown operation: ${operation}`)

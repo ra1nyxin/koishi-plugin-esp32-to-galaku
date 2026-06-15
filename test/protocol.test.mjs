@@ -23,10 +23,10 @@ test('clamps set level to ESP32 range', () => {
 })
 
 test('guards raw commands unless enabled', () => {
-  assert.throws(() => buildSerialCommand('raw', 'STATUS'), /disabled/)
+  assert.throws(() => buildSerialCommand('raw', 'STATUS'), /禁用/)
   assert.deepEqual(buildSerialCommand('raw', 'STATUS', true), {
     line: 'STATUS',
-    note: 'raw command sent',
+    note: '已发送 raw 命令',
   })
 })
 
