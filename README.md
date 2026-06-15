@@ -78,7 +78,7 @@ test/
 .github/workflows/
 ```
 
-GitHub Actions runs:
+GitHub Actions runs on Node.js 22 and 24:
 
 ```text
 npm install
