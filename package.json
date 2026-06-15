@@ -1,0 +1,58 @@
+{
+  "name": "koishi-plugin-esp32-to-galaku",
+  "version": "0.1.0",
+  "description": "Koishi plugin that sends GALAKU control commands to an ESP32-S3 bridge through a local PowerShell TCP-to-serial bridge.",
+  "keywords": [
+    "koishi",
+    "plugin",
+    "koishi-plugin",
+    "esp32",
+    "esp32s3",
+    "galaku",
+    "serial",
+    "ble"
+  ],
+  "license": "MIT",
+  "author": "xiaoyu",
+  "homepage": "https://github.com/ra1nyxin/koishi-plugin-esp32-to-galaku#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ra1nyxin/koishi-plugin-esp32-to-galaku.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ra1nyxin/koishi-plugin-esp32-to-galaku/issues"
+  },
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "files": [
+    "lib",
+    "tools",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "node --test test/*.mjs",
+    "prepack": "npm run build"
+  },
+  "peerDependencies": {
+    "koishi": ">=4.16.0 <5"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.29",
+    "koishi": "^4.18.8",
+    "typescript": "^5.8.3"
+  },
+  "koishi": {
+    "description": {
+      "zh-CN": "通过 PowerShell TCP 串口桥把 Koishi 命令转发到 ESP32-S3，再由 ESP32-S3 控制 GALAKU BLE 设备。",
+      "en-US": "Forward Koishi commands to an ESP32-S3 GALAKU BLE bridge through a PowerShell TCP-to-serial bridge."
+    },
+    "service": {
+      "required": []
+    }
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
