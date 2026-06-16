@@ -1,6 +1,6 @@
 import { Context, Schema } from 'koishi'
 import { sendBridgeLine } from './bridge'
-import { buildSerialCommand } from './protocol'
+import { buildSerialCommand, selectProtocolReply } from './protocol'
 
 export const name = 'esp32-to-galaku'
 
@@ -39,13 +39,13 @@ export function apply(ctx: Context, config: Config) {
       try {
         const command = buildSerialCommand(operation, value, config.allowRaw)
         const result = await sendBridgeLine(config, command.line)
-        const lines = [`GALAKU <= ${result.line}`]
+        const reply = selectProtocolReply(result.reply, result.line)
+        const lines = [`GALAKU ${reply || `OK SENT ${result.line}`}`]
 
         if (command.note) {
           lines.push(command.note)
         }
 
-        lines.push(result.reply ? `GALAKU => ${result.reply}` : '命令已发送，但桥脚本没有返回串口回复。')
         return lines.join('\n')
       } catch (error) {
         return `GALAKU 命令失败：${error instanceof Error ? error.message : String(error)}`
@@ -64,5 +64,5 @@ function usage(): string {
   ].join('\n')
 }
 
-export { buildSerialCommand, normalizeBridgeLine } from './protocol'
+export { buildSerialCommand, normalizeBridgeLine, selectProtocolReply } from './protocol'
 export { sendBridgeLine } from './bridge'

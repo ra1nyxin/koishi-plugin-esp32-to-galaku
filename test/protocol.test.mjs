@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { buildSerialCommand, normalizeBridgeLine } from '../lib/protocol.js'
+import { buildSerialCommand, normalizeBridgeLine, selectProtocolReply } from '../lib/protocol.js'
 
 test('builds known ESP32-S3 serial commands', () => {
   assert.deepEqual(buildSerialCommand('status'), { line: 'STATUS' })
@@ -35,4 +35,18 @@ test('normalizes bridge lines for the PowerShell bridge', () => {
   assert.throws(() => normalizeBridgeLine(''), /empty/)
   assert.throws(() => normalizeBridgeLine('SET 測試'), /printable ASCII/)
   assert.throws(() => normalizeBridgeLine('X'.repeat(65)), /64/)
+})
+
+test('selects protocol replies from noisy ESP32 serial logs', () => {
+  const noisy = [
+    'I (2898975) NimBLE: GATT procedure initiated: write;',
+    'I (2898975) NimBLE: att_handle=10 len=12',
+    '',
+    'I (2899145) NimBLE: GATT procedure initiated: write;',
+    'OK HIT damage=1.00 level=10',
+  ].join('\n')
+
+  assert.equal(selectProtocolReply(noisy, 'HIT 1'), 'OK HIT damage=1.00 level=10')
+  assert.equal(selectProtocolReply('PONG\n', 'PING'), 'PONG')
+  assert.equal(selectProtocolReply('noise only', 'PING'), '')
 })

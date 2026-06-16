@@ -83,6 +83,49 @@ function Ensure-GalakuSerial {
     }
 }
 
+function Select-GalakuProtocolReply {
+    param(
+        [string]$RawReply,
+        [string]$CommandLine
+    )
+
+    if ([string]::IsNullOrWhiteSpace($RawReply)) {
+        return ""
+    }
+
+    $protocolLines = @(
+        $RawReply -split "\r?\n" |
+            ForEach-Object { $_.Trim() } |
+            Where-Object {
+                $_.Length -gt 0 -and
+                ($_ -match '^(PONG|STATUS\b|OK\b|ERR\b|SERVICES\b)')
+            }
+    )
+
+    if ($protocolLines.Count -eq 0) {
+        return ""
+    }
+
+    $verb = (($CommandLine.Trim() -split '\s+', 2)[0]).ToUpperInvariant()
+    $expectedPattern = switch ($verb) {
+        "PING" { '^PONG$' }
+        "STATUS" { '^STATUS\b' }
+        "SCAN" { '^OK SCAN\b' }
+        "SERVICES" { '^(OK SERVICES\b|SERVICES failed\b|ERR\b)' }
+        "SET" { '^OK SET\b' }
+        "HIT" { '^OK HIT\b' }
+        "STOP" { '^OK STOP\b' }
+        default { '^(PONG|STATUS\b|OK\b|ERR\b|SERVICES\b)' }
+    }
+
+    $matches = @($protocolLines | Where-Object { $_ -match $expectedPattern })
+    if ($matches.Count -gt 0) {
+        return $matches[-1]
+    }
+
+    return $protocolLines[-1]
+}
+
 function Send-GalakuSerialLine {
     param(
         [Parameter(Mandatory = $true)][string]$Line,
@@ -109,9 +152,13 @@ function Send-GalakuSerialLine {
 
     $reply = ""
     try {
-        $reply = $script:Serial.ReadExisting().Trim()
-        if ($reply.Length -gt 0) {
-            Write-BridgeLog "COM => $reply"
+        $rawReply = $script:Serial.ReadExisting().Trim()
+        if ($rawReply.Length -gt 0) {
+            Write-BridgeLog "COM => $rawReply"
+            $reply = Select-GalakuProtocolReply -RawReply $rawReply -CommandLine $Line
+            if ($reply.Length -gt 0 -and $reply -ne $rawReply) {
+                Write-BridgeLog "TCP => $reply"
+            }
         }
     } catch {
         Write-BridgeLog "Serial read warning: $($_.Exception.Message)"

@@ -62,6 +62,42 @@ export function buildSerialCommand(operation = 'status', value = '', allowRaw = 
   }
 }
 
+export function selectProtocolReply(rawReply: string, commandLine = ''): string {
+  const lines = rawReply
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter((line) => /^(PONG|STATUS\b|OK\b|ERR\b|SERVICES\b)/.test(line))
+
+  if (!lines.length) return ''
+
+  const verb = commandLine.trim().split(/\s+/, 1)[0]?.toUpperCase()
+  const expected = expectedReplyPattern(verb)
+  const matches = lines.filter((line) => expected.test(line))
+
+  return matches.at(-1) ?? lines.at(-1) ?? ''
+}
+
+function expectedReplyPattern(verb: string): RegExp {
+  switch (verb) {
+    case 'PING':
+      return /^PONG$/
+    case 'STATUS':
+      return /^STATUS\b/
+    case 'SCAN':
+      return /^OK SCAN\b/
+    case 'SERVICES':
+      return /^(OK SERVICES\b|SERVICES failed\b|ERR\b)/
+    case 'SET':
+      return /^OK SET\b/
+    case 'HIT':
+      return /^OK HIT\b/
+    case 'STOP':
+      return /^OK STOP\b/
+    default:
+      return /^(PONG|STATUS\b|OK\b|ERR\b|SERVICES\b)/
+  }
+}
+
 function buildSetCommand(value: string): CommandBuildResult {
   const level = Number.parseInt(value, 10)
 
