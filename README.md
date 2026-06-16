@@ -245,7 +245,15 @@ galaku stop
 ```text
 galaku status
 galaku-esp32s3 status
-gk status
+```
+
+帮助命令统一使用同一份输出：
+
+```text
+galaku help
+galaku --help
+galaku -h
+galaku -?
 ```
 
 `galaku raw <command>` 默认禁用。只有你明确打开 `allowRaw` 后才可用，例如：

@@ -23,13 +23,14 @@ export const Config: Schema<Config> = Schema.object({
 export function apply(ctx: Context, config: Config) {
   ctx.command('galaku <operation:string> [value:text]', 'ESP32-S3 GALAKU 控制桥')
     .alias('galaku-esp32s3')
-    .alias('gk')
     .action(async (_, operation = 'status', value = '') => {
-      if (operation.trim().toLowerCase() === 'help') {
+      const normalizedOperation = operation.trim().toLowerCase()
+
+      if (isHelpOperation(normalizedOperation)) {
         return usage()
       }
 
-      if (operation.trim().toLowerCase() === 'bridge') {
+      if (normalizedOperation === 'bridge') {
         return [
           `GALAKU 桥接地址：${config.host}:${config.port}`,
           '请在持有 ESP32-S3 COM 口的 Windows 机器上启动 tools/galaku-serial-bridge.ps1。',
@@ -55,13 +56,18 @@ export function apply(ctx: Context, config: Config) {
 
 function usage(): string {
   return [
-    '用法：galaku <status|ping|scan|services|set|hit|stop|bridge>',
+    '用法：galaku <status|ping|scan|services|set|hit|stop|bridge|help>',
     '示例：',
+    'galaku help',
     'galaku status',
     'galaku set 30',
     'galaku hit 1.5',
     'galaku stop',
   ].join('\n')
+}
+
+function isHelpOperation(operation: string): boolean {
+  return operation === 'help' || operation === '--help' || operation === '-h' || operation === '-?'
 }
 
 export { buildSerialCommand, normalizeBridgeLine, selectProtocolReply } from './protocol'
