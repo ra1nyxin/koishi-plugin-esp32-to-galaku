@@ -26,7 +26,7 @@ Discord 消息
 - npm 包已发布：<https://www.npmjs.com/package/koishi-plugin-esp32-to-galaku>
 - Koishi 插件市场会从 npm registry 自动索引符合规则的公开插件包，发布后可能需要等待同步。
 
-## 一、准备 Discord 账号、服务器和机器人
+## 准备 Discord 账号、服务器和机器人
 
 ### 1. 注册 Discord 账号
 
@@ -72,7 +72,7 @@ Bot Token 等同于机器人账号密码，不要提交到 GitHub，不要发给
 
 如果只是用 Koishi 文本命令，核心权限是看频道和发消息；`applications.commands` 预留给 Discord/Koishi 侧后续需要注册交互命令的场景。
 
-## 二、准备 Koishi 和 Discord 适配器
+## 准备 Koishi 和 Discord 适配器
 
 下面操作在真正运行机器人的 Koishi 项目里做，不是在本仓库开发目录里做。
 
@@ -132,7 +132,7 @@ allowRaw: false
 
 朋友的 Koishi 机器人通过 frp 连回你的 ESP32-S3 时，把 `host` 和 `port` 改成 frp 暴露出来的地址和端口。
 
-## 三、启动 ESP32-S3 串口桥
+## 启动 ESP32-S3 串口桥
 
 这一步在插着 ESP32-S3 的 Windows 机器上执行。
 
@@ -196,7 +196,7 @@ remote_port = 25363
 
 frp server、token、访问控制、防火墙规则按你的实际环境配置。这个 TCP 端点收到命令就会控制设备，必须把它当作受信控制接口处理。
 
-## 四、在 Discord 中发送控制命令
+## 在 Discord 中发送控制命令
 
 确认这三件事都已完成：
 
@@ -262,7 +262,7 @@ galaku -?
 galaku raw STATUS
 ```
 
-## 五、推荐测试顺序
+## 推荐测试顺序
 
 1. 先不连 GALAKU 设备，只插 ESP32-S3，启动 PS1 桥。
 2. 在 Discord 发 `galaku ping`，确认 Koishi -> TCP -> PS1 -> ESP32-S3 串口通。
@@ -273,7 +273,7 @@ galaku raw STATUS
 7. 发 `galaku stop` 停止。
 8. 确认稳定后再测试 `galaku hit 1.5` 这类动态命令。
 
-## 六、常见问题
+## 常见问题
 
 ### 机器人在线但不响应 `galaku status`
 
@@ -318,7 +318,7 @@ galaku raw STATUS
 
 插件会把 `SET` 强度限制在 ESP32-S3 固件接受的 `0..100` 范围内，超出范围会自动夹紧。
 
-## 七、开发和 CI
+## 开发和 CI
 
 这个仓库的开发策略是：本机只写代码，不在本机缓存 Node.js 依赖。
 
@@ -342,7 +342,7 @@ npm pack --dry-run
 
 当前 workflow 在 Node.js 22 和 24 上构建测试。
 
-## 八、发布到 npm 和 Koishi 插件市场
+## 发布到 npm 和 Koishi 插件市场
 
 Koishi 插件市场主要收录 npm registry 上符合 Koishi 插件规则的公开包。当前项目已经满足关键前提：
 
@@ -410,7 +410,7 @@ https://www.npmjs.com/package/koishi-plugin-esp32-to-galaku
 
 Tip：后续每次发布前都要先更新 `package.json` 里的版本号。修复 README 或小问题用 patch 版本，例如 `0.1.1`；增加功能用 minor 版本，例如 `0.2.0`。
 
-## 九、实测记录
+## 实测记录
 
 ### 2026-06-16：Ubuntu VM -> 物理机 PS1 桥 -> ESP32-S3 -> GALAKU
 
@@ -496,7 +496,7 @@ b'PONG\n'
 
 Tip：跨 VM/物理机测试时，先用 `PING` 和 `STATUS` 验证链路；需要远程访问时再显式启用 `-ListenAddress 0.0.0.0`，不要把它作为默认值。
 
-## 十、参考文档
+## 参考文档
 
 - Koishi 模板项目：<https://koishi.chat/zh-CN/manual/starter/boilerplate.html>
 - Koishi Discord 适配器：<https://koishi.chat/zh-CN/plugins/adapter/discord.html>
