@@ -1,6 +1,6 @@
 {
   "name": "koishi-plugin-esp32-to-galaku",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Koishi plugin that sends GALAKU control commands to an ESP32-S3 bridge through a local PowerShell TCP-to-serial bridge.",
   "keywords": [
     "koishi",
@@ -46,8 +46,8 @@
   },
   "koishi": {
     "description": {
-      "zh-CN": "通过 PowerShell TCP 串口桥把 Koishi 命令转发到 ESP32-S3，再由 ESP32-S3 控制 GALAKU BLE 设备。",
-      "en-US": "Forward Koishi commands to an ESP32-S3 GALAKU BLE bridge through a PowerShell TCP-to-serial bridge."
+      "zh-CN": "通过PowerShell串口桥把Koishi命令转发到ESP32S3再由ESP32S3控制GALAKU设备实现让群友控制我的跳蛋或其他小玩具",
+      "en-US": "Relays Koishi chat commands through a PowerShell serial bridge to an ESP32-S3, letting trusted users control a GALAKU toy."
     },
     "service": {
       "required": []
