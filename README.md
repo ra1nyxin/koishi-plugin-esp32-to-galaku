@@ -333,11 +333,81 @@ npm pack --dry-run
 
 当前 workflow 在 Node.js 22 和 24 上构建测试。
 
-## 八、参考文档
+## 八、发布到 npm 和 Koishi 插件市场
+
+Koishi 插件市场主要收录 npm registry 上符合 Koishi 插件规则的公开包。当前项目已经满足关键前提：
+
+- 包名是 `koishi-plugin-esp32-to-galaku`。
+- `peerDependencies` 里声明了 `koishi`。
+- `package.json` 里有 `koishi` 元数据。
+- GitHub 仓库是公开仓库。
+- GitHub Actions 能完成构建、测试和打包检查。
+- npm registry 当前没有占用这个包名。
+
+还缺的一步是：把包发布到 npm。
+
+### 1. 创建 npm 账号
+
+1. 打开 <https://www.npmjs.com/signup> 注册 npm 账号。
+2. 登录后建议开启 2FA。
+3. 进入 Access Tokens 页面创建 token。
+4. token 类型建议选择可用于发布包的 Automation / Publish token。
+
+### 2. 把 npm token 写入 GitHub Secrets
+
+1. 打开 GitHub 仓库：<https://github.com/ra1nyxin/koishi-plugin-esp32-to-galaku>
+2. 进入 `Settings` -> `Secrets and variables` -> `Actions`。
+3. 点击 `New repository secret`。
+4. 名称填：
+
+```text
+NPM_TOKEN
+```
+
+5. 值填刚才从 npm 创建的 token。
+
+### 3. 手动触发发布 workflow
+
+1. 打开 GitHub 仓库的 `Actions` 页面。
+2. 选择 `Publish to npm` workflow。
+3. 点击 `Run workflow`。
+4. workflow 会执行：
+
+```text
+npm install
+npm run build
+npm test
+npm pack --dry-run
+npm publish --access public --provenance
+```
+
+发布成功后，npm 包地址会是：
+
+```text
+https://www.npmjs.com/package/koishi-plugin-esp32-to-galaku
+```
+
+### 4. 等待 Koishi 插件市场收录
+
+发布到 npm 后，Koishi 插件市场通常会自动索引符合规则的包。不是 GitHub Actions 直接扫描 GitHub 仓库，而是 Koishi 市场侧扫描 npm 包。
+
+如果发布后没有马上出现，先等一段时间，再检查：
+
+- npm 包是否公开。
+- 包名是否仍是 `koishi-plugin-esp32-to-galaku`。
+- `peerDependencies.koishi` 是否存在。
+- README 和 `package.json` 是否已随 npm 包发布。
+- npm 页面是否能正常访问。
+
+Tip：第一次发布建议保持版本 `0.1.0`，确认 npm 和 Koishi 市场链路通了，再按实际测试结果发 `0.1.1`、`0.2.0` 或 `1.0.0`。
+
+## 九、参考文档
 
 - Koishi 模板项目：<https://koishi.chat/zh-CN/manual/starter/boilerplate.html>
 - Koishi Discord 适配器：<https://koishi.chat/zh-CN/plugins/adapter/discord.html>
+- Koishi 插件发布：<https://koishi.chat/zh-CN/guide/develop/publish.html>
 - Discord Developer Portal：<https://discord.com/developers/applications>
 - Discord Gateway / Intents 文档：<https://discord.com/developers/docs/topics/gateway>
+- npm 注册账号：<https://docs.npmjs.com/creating-a-new-npm-user-account>
 
 Tip：第一次端到端测试时，先用 `galaku ping` 和 `galaku status` 验证链路，不要直接从高强度 `set` 或复杂 frp 场景开始。
