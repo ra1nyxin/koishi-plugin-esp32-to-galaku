@@ -8,3 +8,5 @@ pnpm-debug.log*
 *.tgz
 .env
 .env.*
+bridge.*.log
+.tmp-*

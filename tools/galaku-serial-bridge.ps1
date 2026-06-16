@@ -137,7 +137,8 @@ try {
         try {
             $stream = $client.GetStream()
             $reader = [System.IO.StreamReader]::new($stream, [System.Text.Encoding]::ASCII, $false, 1024, $true)
-            $writer = [System.IO.StreamWriter]::new($stream, [System.Text.Encoding]::UTF8, 1024, $false)
+            $utf8NoBom = [System.Text.UTF8Encoding]::new($false)
+            $writer = [System.IO.StreamWriter]::new($stream, $utf8NoBom, 1024, $false)
             $writer.NewLine = "`n"
             $writer.AutoFlush = $true
 
