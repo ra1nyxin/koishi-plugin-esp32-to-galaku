@@ -23,7 +23,8 @@ Discord 消息
 - PS1 桥脚本已放在 `tools/galaku-serial-bridge.ps1`，并且会把 ESP32-S3 串口回复写回 TCP 客户端。
 - GitHub Actions 已配置，依赖安装、TypeScript 构建、Node 测试、`npm pack --dry-run` 都在 Actions 里跑。
 - 当前仓库开发机不需要执行 `npm init`、`npm install`、`npm run build` 或测试。
-- 还没有发布到 npm 时，可以在实际 Koishi 部署项目中通过 GitHub 依赖安装。
+- npm 包已发布：<https://www.npmjs.com/package/koishi-plugin-esp32-to-galaku>
+- Koishi 插件市场会从 npm registry 自动索引符合规则的公开插件包，发布后可能需要等待同步。
 
 ## 一、准备 Discord 账号、服务器和机器人
 
@@ -344,7 +345,7 @@ Koishi 插件市场主要收录 npm registry 上符合 Koishi 插件规则的公
 - GitHub Actions 能完成构建、测试和打包检查。
 - npm registry 当前没有占用这个包名。
 
-还缺的一步是：把包发布到 npm。
+当前包已经发布到 npm。下面流程用于首次发布后的维护发版，或者以后更新版本时复用。
 
 ### 1. 创建 npm 账号
 
@@ -381,7 +382,7 @@ npm pack --dry-run
 npm publish --access public --provenance
 ```
 
-发布成功后，npm 包地址会是：
+发布成功后，npm 包地址是：
 
 ```text
 https://www.npmjs.com/package/koishi-plugin-esp32-to-galaku
@@ -399,7 +400,7 @@ https://www.npmjs.com/package/koishi-plugin-esp32-to-galaku
 - README 和 `package.json` 是否已随 npm 包发布。
 - npm 页面是否能正常访问。
 
-Tip：第一次发布建议保持版本 `0.1.0`，确认 npm 和 Koishi 市场链路通了，再按实际测试结果发 `0.1.1`、`0.2.0` 或 `1.0.0`。
+Tip：后续每次发布前都要先更新 `package.json` 里的版本号。修复 README 或小问题用 patch 版本，例如 `0.1.1`；增加功能用 minor 版本，例如 `0.2.0`。
 
 ## 九、参考文档
 
