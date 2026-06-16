@@ -402,7 +402,91 @@ https://www.npmjs.com/package/koishi-plugin-esp32-to-galaku
 
 Tip：后续每次发布前都要先更新 `package.json` 里的版本号。修复 README 或小问题用 patch 版本，例如 `0.1.1`；增加功能用 minor 版本，例如 `0.2.0`。
 
-## 九、参考文档
+## 九、实测记录
+
+### 2026-06-16：Ubuntu VM -> 物理机 PS1 桥 -> ESP32-S3 -> GALAKU
+
+实测环境：
+
+| 项目 | 值 |
+| --- | --- |
+| 物理机 LAN IP | `192.168.10.222` |
+| Ubuntu Desktop VM IP | `192.168.40.152` |
+| VM Node.js | `v22.22.3` |
+| VM npm | `10.9.8` |
+| 物理机 ESP32-S3 串口 | `COM3` |
+| PS1 桥监听 | `0.0.0.0:25363` |
+| 插件 npm 版本 | `0.1.1` 实测，随后修复桥脚本并升到 `0.1.2` |
+
+物理机启动桥脚本：
+
+```powershell
+powershell -ExecutionPolicy Bypass `
+  -File .\tools\galaku-serial-bridge.ps1 `
+  -SerialPort COM3 `
+  -Baud 115200 `
+  -ListenPort 25363 `
+  -ListenAddress 0.0.0.0
+```
+
+VM 内创建一次性测试目录并安装：
+
+```bash
+mkdir -p ~/koishi-galaku-test
+cd ~/koishi-galaku-test
+npm init -y
+npm install koishi koishi-plugin-esp32-to-galaku
+```
+
+VM 下载 npm 包时使用了物理机 Clash 共享代理：
+
+```bash
+npm config set proxy http://192.168.10.222:46464
+npm config set https-proxy http://192.168.10.222:46464
+```
+
+用插件导出的 `sendBridgeLine()` 从 VM 直连物理机桥，结果：
+
+```text
+<= PING
+=> "PONG"
+
+<= STATUS
+=> "STATUS ble=1 host_synced=1 scanning=0 connecting=0 connected=1 service_ready=1 target=GK36 level=0 handle=10"
+
+<= SET 10
+=> "... OK SET 10"
+
+<= STOP
+=> "... OK STOP"
+```
+
+同时验证 Koishi Context 能加载插件并注册命令：
+
+```text
+plugin loaded: true
+commander service: true
+registered commands: galaku
+```
+
+这次实测发现并修复了一个桥脚本细节：旧版 PS1 桥用默认 UTF-8 `StreamWriter` 时，TCP 客户端可能先收到 UTF-8 BOM。`0.1.2` 起改为无 BOM UTF-8，VM 端原始 TCP 回复确认为：
+
+```text
+b'PONG\n'
+```
+
+### 测试结论
+
+- VM 可以通过物理机 LAN IP 访问 PS1 桥。
+- PS1 桥使用 `-ListenAddress 0.0.0.0` 时可被 VM 访问；默认仍是 `127.0.0.1`，避免误暴露。
+- npm 包可以在干净 Ubuntu 环境安装。
+- 插件 TCP 客户端能从 VM 控制物理机上的 ESP32-S3。
+- ESP32-S3 已连接到 `GK36`，并能执行 `SET 10` 和 `STOP`。
+- Koishi 插件入口能被 Koishi Context 加载，`galaku` 命令已注册。
+
+Tip：跨 VM/物理机测试时，先用 `PING` 和 `STATUS` 验证链路；需要远程访问时再显式启用 `-ListenAddress 0.0.0.0`，不要把它作为默认值。
+
+## 十、参考文档
 
 - Koishi 模板项目：<https://koishi.chat/zh-CN/manual/starter/boilerplate.html>
 - Koishi Discord 适配器：<https://koishi.chat/zh-CN/plugins/adapter/discord.html>
