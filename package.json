@@ -1,6 +1,6 @@
 {
   "name": "koishi-plugin-esp32-to-galaku",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Koishi plugin that sends GALAKU control commands to an ESP32-S3 bridge through a local PowerShell TCP-to-serial bridge.",
   "keywords": [
     "koishi",
