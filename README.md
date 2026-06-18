@@ -228,6 +228,43 @@ galaku hit 1.5
 galaku stop
 ```
 
+### `set` 和 `hit` 的区别
+
+`galaku set <0-100>` 是直接设定强度。
+
+```text
+galaku set 30
+```
+
+它会向 ESP32-S3 发送：
+
+```text
+SET 30
+```
+
+适合手动测试固定强度。插件会把数值限制在 `0..100` 范围内，例如 `galaku set 200` 会被夹到 `SET 100`。
+
+`galaku hit <damage>` 是模拟一次“受击反馈”。
+
+```text
+galaku hit 1
+```
+
+它会向 ESP32-S3 发送：
+
+```text
+HIT 1
+```
+
+ESP32-S3 固件会把 `damage` 换算成强度增量，再叠加到当前强度。例如当前固件里 `HIT 1` 通常会得到约 `level=10`；连续 `hit` 会继续累加，但最高不会超过 `100`。
+
+简单说：
+
+```text
+set = 直接设定强度
+hit = 按伤害值叠加强度
+```
+
 如果你的 Koishi 设置了全局命令前缀，例如 `/`、`.`、`!`，就在 Discord 里按该前缀发送：
 
 ```text
