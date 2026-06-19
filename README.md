@@ -21,6 +21,7 @@ Discord 消息
 
 - 插件命令已可用：`galaku status`、`galaku ping`、`galaku scan`、`galaku services`、`galaku set <0-100>`、`galaku hit <damage>`、`galaku stop`、`galaku messagehit <on|off|status>`。
 - PS1 桥脚本已放在 `tools/galaku-serial-bridge.ps1`，并且会把 ESP32-S3 串口回复写回 TCP 客户端。
+- ESP32-S3 固件源码已放在 `firmware/esp32s3-galaku-bridge/`，可直接用 ESP-IDF 构建和烧录。
 - GitHub Actions 已配置，依赖安装、TypeScript 构建、Node 测试、`npm pack --dry-run` 都在 Actions 里跑。
 - 当前仓库开发机不需要执行 `npm init`、`npm install`、`npm run build` 或测试。
 - npm 包已发布：<https://www.npmjs.com/package/koishi-plugin-esp32-to-galaku>
@@ -136,6 +137,41 @@ messageHitDamage: 10
 
 朋友的 Koishi 机器人通过 frp 连回你的 ESP32-S3 时，把 `host` 和 `port` 改成 frp 暴露出来的地址和端口。
 
+## ESP32-S3 固件源码和烧录
+
+固件源码在：
+
+```text
+firmware/esp32s3-galaku-bridge/
+```
+
+它是一个 ESP-IDF 工程，负责通过 BLE 连接 GALAKU/GK36 设备，并通过 ESP32-S3 USB Serial/JTAG 接收 PS1 桥转发来的控制命令。
+
+在 ESP-IDF 终端进入固件目录：
+
+```powershell
+cd .\firmware\esp32s3-galaku-bridge
+idf.py set-target esp32s3
+idf.py build
+idf.py -p COMx flash monitor
+```
+
+把 `COMx` 换成设备管理器里的实际 ESP32-S3 串口。烧录成功后，固件支持这些串口命令：
+
+```text
+PING
+STATUS
+SCAN
+SERVICES
+SET <0-100>
+HIT <damage>
+STOP
+```
+
+固件目录内有更完整的烧录说明：[firmware/esp32s3-galaku-bridge/README.md](./firmware/esp32s3-galaku-bridge/README.md)。
+
+Tip：本仓库只提交固件源码和 `sdkconfig.defaults`，不会提交 `build/`、`sdkconfig`、`sdkconfig.old` 等本机构建产物。
+
 ## 启动 ESP32-S3 串口桥
 
 这一步在插着 ESP32-S3 的 Windows 机器上执行。
@@ -153,6 +189,8 @@ SET <0-100>
 HIT <damage>
 STOP
 ```
+
+如果你还没有烧录固件，先使用 `firmware/esp32s3-galaku-bridge/` 里的 ESP-IDF 工程烧录。
 
 当前 ESP32-S3 项目默认信息：
 
